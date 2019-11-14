@@ -7,53 +7,44 @@ Coste del algoritmo (tiempo): O(n)
 Coste del algoritmo (espacio): O(n)
 
 Precondiciones: N > 0
-alturaArboles(V[N]: de enteros, altura:entero) dev maxInicio, maxFin
+fun resuelveCaso(V[N]: de ent) dev maxLongitudSegmento
 Poscondiciones:
-    (para todo i: maxInicio <= i <= maxFin: V[i] > altura)
-    y si i,j son enteros entre 1 y N tales que 
-        (para todo k: i <= k <= j: V[k] > altura) =>
-            j-i < maxFin-maxInicio o bien i > maxInicio
+    maxLongitudSegmento = (max j,k: 0 < j < k < N ^ (para todo l: j <= l < k: V[k] = V[k+1]) : j -k)
 Invariante:
-    (para todo i: maxInicio <= i <= maxFin: V[i] > altura)
-    y si j,k son enteros entre 1 y i tales que 
-        (para todo k: i <= k <= j: V[k] > altura) =>
-            j-k < maxFin-maxInicio o j-k = maxFin - maxInicio ^ k > maxInicio
+    maxLongitudSegmento = (max j,k: 0 < j < k < i ^ (para todo l: j <= l < k: V[k] = V[k+1]) : j -k)
+    longitud = i - (min j : 0 < j < i: (para todo k: j <= k < i: V[k] = V[k+1]))
 
 Avanzar: i++
-    si i-inicio > maxFin-maxInicio ^ (para todo j: inicio < j < i: V[j] > altura)
-        maxFin, maxInicio = i, inicio
-    si V[i] < 0 inicio = i+1   
+    maxLongitudSegmento = max { maxLongitudSegmento, longitud }
                         
 Función de cota: N - i 
 Condición de bucle: i < N
 Terminación: i = N
+*/
 
-    
-
- */
-void resuelveCaso(long long int longitud, long long int altura) {
-    long long int datoLeido, longitudSegmento = 0, maxInicio = 0, maxFin = 0, maxLongitudSegmento = 0, inicio = 0;
-    for (int i = 0; i < longitud; i++) {
-        std::cin >> datoLeido;
-        if (datoLeido > altura) {
-            longitudSegmento++;
-            if (longitudSegmento > maxLongitudSegmento) {
-                maxLongitudSegmento = longitudSegmento;
-                maxInicio = inicio;
-                maxFin = i;
-            }
-        }
-        else inicio = i+1, longitudSegmento = 0;
-    }
-    std::cout << maxInicio << " " << maxFin << std::endl;
+long int resuelveCaso(std::vector<long int> &v) {
+    long int longitudSegmento = 0, maxLongitudSegmento = 0; 
+    long unsigned int size = v.size();
+    for(long unsigned int i = 0; i < size-1; i++)
+        if (v.at(i) == v.at(i+1) && ++longitudSegmento > maxLongitudSegmento) 
+            maxLongitudSegmento = longitudSegmento;
+        else longitudSegmento = 0;
+    return maxLongitudSegmento;
 }
 
 int main() {
-	int numCasos;
-    long long int longVector, altura;
-	std::cin >> numCasos;
-	for (int i = 0; i < numCasos; i++) {
-	    std::cin >> longVector >> altura;
-		resuelveCaso(longVector, altura);	
-   }
+    do {
+        long int datoLeido;
+        std::vector<long int> v;
+        std::cin >> datoLeido;
+        while (datoLeido != -1) {
+            v.push_back(datoLeido);
+            std::cin >> datoLeido;
+        }
+        if (v.size()) {
+            long int diff = resuelveCaso(v);
+            if (diff == 0) std::cout << "HOY NO COMEN" << std::endl;
+            else std::cout << diff << std::endl;
+        }
+	} while (std::cin);
 }
