@@ -1,50 +1,72 @@
-#include <algorithm>
 #include <iostream>
 #include <vector>
 
 /*
-Coste del algoritmo (tiempo): O(n)
-Coste del algoritmo (espacio): O(n)
+ * Precondicion: N >= 0
+ * fun esApta(V[N] de ent, cota: ent) dev apta
+ * Poscondicion:
+ *  apta = (pt k,l: 0 <= k < l < N: V[l] - V[k] < cota)
+ *
+ *  que es equivalente a
+ *    (pt j: 0 <= k < N: V[k] - V[comienzoCuesta(k)] < cota)
+ *
+ *  comienzoCuesta(x) = (min x: 0 <= k <= j: segmentoCreciente(k, x))
+ *  segmentoCreciente(x,y) = (pt l: x <= l <= y-1: V[l] < V[l+1])
+ *
+ * Invariante:
+ *  1 <= i < N
+ *  j = comienzoCuesta(i)
+ *    [Notese que si V[j-1] >= V[j] entonces j=i]
+ *  apta = (pt j: 0 <= k < i: V[k] - V[comienzoCuesta(k)] < cota)
+ *
+ *  Avanzar:
+ *    i := i+1
+ *    si V[i-1] < V[i]: 
+ *      apta := V[i] - V[j] < cota
+ *    si no:
+ *      j = i
+ *
+ * Funcion de cota: N-i
+ * Condicion de bucle: i < N
+ * Condicion de terminacion: i == N
+ * Rendimiento: lineal orden simetrico(N)
+ *
+ */
 
-Precondiciones: N > 0
-fun resuelveCaso(V[N]: de ent) dev maxLongitudSegmento
-Poscondiciones:
-    maxLongitudSegmento = (max j,k: 0 < j < k < N ^ (para todo l: j <= l < k: V[k] = V[k+1]) : j -k)
-Invariante:
-    maxLongitudSegmento = (max j,k: 0 < j < k < i ^ (para todo l: j <= l < k: V[k] = V[k+1]) : j -k)
-    longitud = i - (min j : 0 < j < i: (para todo k: j <= k < i: V[k] = V[k+1]))
+bool esApta(const std::vector<int> &v, long long int cota);
 
-Avanzar: i++
-    maxLongitudSegmento = max { maxLongitudSegmento, longitud }
-                        
-Función de cota: N - i 
-Condición de bucle: i < N
-Terminación: i = N
-*/
+bool resuelve(long long int cota, long long int casos) {
+	long long int nuevoNumero;
+  std::vector <int> v;
 
-long int resuelveCaso(std::vector<long int> &v) {
-    long int longitudSegmento = 0, maxLongitudSegmento = 0; 
-    long unsigned int size = v.size();
-    for(long unsigned int i = 0; i < size-1; i++)
-        if (v.at(i) == v.at(i+1) && ++longitudSegmento > maxLongitudSegmento) 
-            maxLongitudSegmento = longitudSegmento;
-        else longitudSegmento = 0;
-    return maxLongitudSegmento;
+	for (int i = 0; i < casos; i++) {
+    std::cin >> nuevoNumero;
+		v.push_back(nuevoNumero);
+	}
+
+	if (esApta(v, cota)) std::cout << "APTA" << std::endl;
+	else std::cout << "NO APTA" << std::endl;
+  return true;
+}
+
+bool esApta(const std::vector<int> &v, 
+    long long int cota) 
+{
+  bool apta = true;
+  int i = 1, j = 0;
+  while (apta && i < v.size()) {
+    if (v.at(i-1) < v.at(i)) apta = v.at(i) - v.at(j) <= cota;
+    else j = i;
+    i++;
+  }
+  return apta;
 }
 
 int main() {
-    do {
-        long int datoLeido;
-        std::vector<long int> v;
-        std::cin >> datoLeido;
-        while (datoLeido != -1) {
-            v.push_back(datoLeido);
-            std::cin >> datoLeido;
-        }
-        if (v.size()) {
-            long int diff = resuelveCaso(v);
-            if (diff == 0) std::cout << "HOY NO COMEN" << std::endl;
-            else std::cout << diff << std::endl;
-        }
-	} while (std::cin);
+  long long int cota, numero;
+  std::cin >> cota >> numero;
+  while (std::cin) {
+	  resuelve(cota, numero);
+    std::cin >> cota >> numero;
+  }
 }
