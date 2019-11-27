@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include<iostream>
 #include<vector>
 
@@ -7,7 +8,9 @@ typedef struct {
   long long int maximo;
 } tRetorno;
 
-tRetorno parcialmenteOrdenado(const std::vector<int> &v, int i, int j) {
+tRetorno parcialmenteOrdenado(const std::vector<long long int> &v, 
+        long long i, 
+        long long j) {
   tRetorno ret;
   if (i == j-1) {
     ret.parcialmenteOrdenado = v[i] <= v[j];
@@ -15,7 +18,7 @@ tRetorno parcialmenteOrdenado(const std::vector<int> &v, int i, int j) {
     ret.maximo = v[j];
   }
   else {
-    int medio = (i+j)/2;
+    long long int medio = (i+j)/2;
     tRetorno x1 = parcialmenteOrdenado(v, i, medio);
     tRetorno x2 = parcialmenteOrdenado(v, medio+1, j);
     ret.parcialmenteOrdenado = x1.parcialmenteOrdenado && 
@@ -28,18 +31,18 @@ tRetorno parcialmenteOrdenado(const std::vector<int> &v, int i, int j) {
 }
 
 bool resuelveCaso() {
-  std::vector<int> v;
-  int n;
-  std::cin >> n;
+  std::vector<long long int> v;
+  long long int n;
+  scanf("%lld", &n);
  
   if (n == 0) return false;
   while (n != 0) {
     v.push_back(n);
-    std::cin >> n;
+    scanf("%lld", &n);
   }
 
   tRetorno ret = parcialmenteOrdenado(v, 0, v.size()-1);
-  std::cout << (ret.parcialmenteOrdenado ? "SI" : "NO") << std::endl;
+  printf("%s\n", (ret.parcialmenteOrdenado ? "SI" : "NO"));
   return true;
 }
 
